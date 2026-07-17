@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>历代诗人作家百科</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "SimSun", sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f8f3e9 0%, #e8ded0 100%);
+            color: #333;
+            padding: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #8b2323;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(139, 35, 35, 0.2);
+            position: relative;
+        }
+        h1::after {
+            content: "";
+            display: block;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8b2323, transparent);
+            margin: 15px auto 0;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.7);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        #searchInput {
+            width: 450px;
+            height: 45px;
+            padding: 0 20px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        #searchInput:focus {
+            border-color: #8b2323;
+            box-shadow: 0 0 0 3px rgba(139, 35, 35, 0.1);
+        }
+        button {
+            height: 45px;
+            padding: 0 25px;
+            margin-left: 12px;
+            border: none;
+            background: #8b2323;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #a63232;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(139, 35, 35, 0.2);
+        }
+        .filter-area {
+            text-align: center;
+            margin: 30px 0;
+            background: rgba(255,255,255,0.7);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        select {
+            height: 40px;
+            padding: 0 15px;
+            margin: 0 10px;
+            font-size: 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        select:focus {
+            border-color: #8b2323;
+        }
+        .poet-card {
+            background: rgba(255,255,255,0.9);
+            padding: 35px;
+            margin-top: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            line-height: 1.9;
+            border-left: 5px solid #8b2323;
+        }
+        .poet-card h2 {
+            color: #8b2323;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        .poet-card p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .poet-card strong {
+            color: #8b2323;
+            min-width: 100px;
+            display: inline-block;
+        }
+        .hide {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            #searchInput {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            button {
+                margin: 5px;
+            }
+            .filter-area select {
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>历代诗人作家百科</h1>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="输入诗人/作家姓名搜索...">
+        <button onclick="searchPoet()">🔍 搜索</button>
+        <button onclick="randomPoet()">🎲 随机抽取一位</button>
+    </div>
+
+    <div class="filter-area">
+        <select id="dynasty">
+            <option value="">全部年代</option>
+            <option value="唐">唐代</option>
+            <option value="宋">宋代</option>
+            <option value="魏晋">魏晋</option>
+            <option value="清">清代</option>
+        </select>
+        <select id="style">
+            <option value="">全部风格</option>
+            <option value="豪放">豪放</option>
+            <option value="婉约">婉约</option>
+            <option value="田园">田园</option>
+            <option value="写实">写实</option>
+        </select>
+        <button onclick="filterPoet()">筛选查找</button>
+    </div>
+
+    <div class="poet-card" id="poetInfo">
+        <p style="text-align:center; color:#666; font-size:17px;">📜 请搜索、随机抽取或筛选，查看诗人信息</p>
+    </div>
+
+    <script>
+        const poetList = [
+            {
+                name: "李白",
+                dynasty: "唐",
+                style: "豪放",
+                life: "李白，字太白，号青莲居士，唐代伟大的浪漫主义诗人。一生游历四方，性格洒脱不羁，热爱自由，被后人誉为“诗仙”。",
+                works: "代表作：《静夜思》《将进酒》《望庐山瀑布》《蜀道难》"
+            },
+            {
+                name: "杜甫",
+                dynasty: "唐",
+                style: "写实",
+                life: "杜甫，字子美，世称杜工部。唐代现实主义诗人，诗作多反映民间疾苦，沉郁顿挫，被后人尊为“诗圣”。",
+                works: "代表作：《春望》《茅屋为秋风所破歌》《三吏三别》《登高》"
+            },
+            {
+                name: "苏轼",
+                dynasty: "宋",
+                style: "豪放",
+                life: "苏轼，字子瞻，号东坡居士。北宋著名文学家、书画家，仕途坎坷却心胸豁达，诗词书画无一不精。",
+                works: "代表作：《水调歌头·明月几时有》《念奴娇·赤壁怀古》《定风波》"
+            },
+            {
+                name: "李清照",
+                dynasty: "宋",
+                style: "婉约",
+                life: "李清照，号易安居士，宋代杰出女词人。前期词作明快清新，晚年历经战乱，风格转为凄婉悲凉，被誉为“千古第一才女”。",
+                works: "代表作：《声声慢》《醉花阴》《如梦令》《一剪梅》"
+            },
+            {
+                name: "陶渊明",
+                dynasty: "魏晋",
+                style: "田园",
+                life: "陶渊明，字元亮，又名潜。东晋诗人，厌倦官场生活，归隐田园，是中国田园诗派的开创者，诗作质朴自然。",
+                works: "代表作：《桃花源记》《饮酒·其五》《归园田居》《五柳先生传》"
+            }
+        ];
+
+        function searchPoet(){
+            let key = document.getElementById("searchInput").value.trim();
+            let result = poetList.find(item => item.name.includes(key));
+            showInfo(result);
+        }
+
+        function randomPoet(){
+            let randomNum = Math.floor(Math.random() * poetList.length);
+            showInfo(poetList[randomNum]);
+        }
+
+        function filterPoet(){
+            let dy = document.getElementById("dynasty").value;
+            let st = document.getElementById("style").value;
+            let res = poetList.filter(item => {
+                let matchDy = dy ? item.dynasty === dy : true;
+                let matchSt = st ? item.style === st : true;
+                return matchDy && matchSt;
+            });
+            if(res.length > 0){
+                showInfo(res[0]);
+            }else{
+                document.getElementById("poetInfo").innerHTML = "<p style='text-align:center; color:#666;'>暂无符合条件的诗人</p>";
+            }
+        }
+
+        function showInfo(data){
+            if(!data){
+                document.getElementById("poetInfo").innerHTML = "<p style='text-align:center; color:#666;'>未找到该诗人，请更换关键词</p>";
+                return;
+            }
+            let html = `
+                <h2>${data.name}</h2>
+                <p><strong>所处年代：</strong>${data.dynasty}</p>
+                <p><strong>创作风格：</strong>${data.style}</p>
+                <p><strong>人生背景：</strong>${data.life}</p>
+                <p><strong>代表作品：</strong>${data.works}</p>
+            `;
+            document.getElementById("poetInfo").innerHTML = html;
+        }
+    </script>
+</body>
+</html>
